@@ -1,20 +1,13 @@
 <h2>Sign in</h2>
 
-<%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
-    <div><%= f.label :email %>
-      <br/>
-      <%= f.email_field :email, :autofocus => true %></div>
+<div class='well'>
+	<h3><%= t('login.canvas_html') %></h3>
+	<% if from_canvas request %>
+		<div><%= t('login.canvas_info_html', link: 'https://oplerno.instructure.com/login?canvas_login=1') %></div>
+	<% end %>
+</div>
 
-    <div><%= f.label :password %>
-      <br/>
-      <%= f.password_field :password %></div>
-
-    <% if devise_mapping.rememberable? -%>
-        <div><%= f.check_box :remember_me %> <%= f.label :remember_me %></div>
-    <% end -%>
-
-    <div><%= f.submit t('devise.sessions.new.sign_in'), {:class => "btn btn-info"} %></div>
-<% end %>
+<%= render 'devise/sessions/form' %>
 
 <%= render "devise/shared/links" %>
 

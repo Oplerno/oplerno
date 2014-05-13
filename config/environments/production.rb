@@ -1,3 +1,5 @@
+require 'haml'
+
 Oplerno::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -28,7 +30,7 @@ Oplerno::Application.configure do
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for nginx
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  #config.force_ssl = true
+  config.force_ssl = true
 
   # See everything in the log (default is :info)
   # config.log_level = :debug
@@ -81,15 +83,14 @@ Oplerno::Application.configure do
   ::CANVAS_HOST = 'oplerno.instructure.com'
 
   config.after_initialize do
-    ActiveMerchant::Billing::Base.mode = :test
+    ActiveMerchant::Billing::Base.mode = :production
     ::GATEWAY = ActiveMerchant::Billing::PaypalExpressGateway.new(
-        :login => "webhat-facilitator_api1.xs4all.nl",
-        :password => "1388752803",
-        :signature => ENV['PAYPAL_SIG'],
-        # TODO: Public URL here
-        :ipn_notification_url => 'https://www.oplerno.com/orders/ipn',
-        :return_url => 'https://www.oplerno.com/orders/confirm',
-        :cancel_url => 'https://www.oplerno.com/orders/cancel',
+        :login      => ENV['PAYPAL_USER'],
+        :password   => ENV['PAYPAL_PASS'],
+        :signature  => ENV['PAYPAL_SIG'],
+        :ipn_notification_url => 'https://marketplace.oplerno.com/orders/ipn',
+        :return_url           => 'https://marketplace.oplerno.com/orders/confirm',
+        :cancel_url           => 'https://marketplace.oplerno.com/orders/cancel',
     )
   end
 end

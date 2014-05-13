@@ -9,7 +9,7 @@ class CoursesController < ApplicationController
   # GET /courses.json
   def index
     respond_to do |format|
-        format.html { @courses = Course.page params[:page] }
+			format.html { @courses = Course.order(:name).where(:hidden => false).page params[:page] }
         format.json {
 					@courses = Course.all
 					render json: @courses
@@ -65,15 +65,7 @@ class CoursesController < ApplicationController
   def update
     return unless current_user?
 
-    respond_to do |format|
-      if @course.update_attributes(course_params)
-        format.html { redirect_to @course, notice: (I18n.t 'courses.success.update') }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @course.errors, status: :unprocessable_entity }
-      end
-    end
+		update_model :course, course_params
   end
 
   # DELETE /courses/1

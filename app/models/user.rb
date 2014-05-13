@@ -3,7 +3,22 @@
 class User < ActiveRecord::Base
   attr_accessible :avatar
   has_attached_file :avatar, :styles => { :medium => "300x300>", :thumb => "100x100>" },
-                    :default_url => "/assets/:style/avatar.png"
+										:path => "users/:attachment/:id_partition/:style/:filename",
+										:url => "/dynamic/users/avatars/:id_partition/:style/:basename.:extension",
+                    :default_url => "/assets/:style/avatar.png", :storage => :redis
+
+	validates_attachment :avatar, content_type: { content_type: /\Aimage\/.*\Z/ }
+
+	serialize :links
+
+	has_paper_trail
+
+	# initialization callback
+	def after_initialize
+	  self.links ||= {} 
+	end
+
+	validates_with UserValidator, fields: [:links]
 
   encrypt_with_public_key :secret,
                           :key_pair => Rails.root.join('config', 'strongbox', 'keypair.pem')
@@ -53,9 +68,8 @@ class User < ActiveRecord::Base
                   :filename,
                   :content_type,
                   :binary_data,
-                  :encrypted_title,
-                  :encrypted_last_name,
-                  :encrypted_first_name
+                  :encrypted_title, :encrypted_last_name, :encrypted_first_name,
+									:links
 
   has_and_belongs_to_many :courses
   has_one :cart
@@ -70,27 +84,46 @@ class User < ActiveRecord::Base
     User.find(id)
   end
 
-  def encrypted_title
-    self.title.decrypt Devise.secret_key
-  end
+	def display_name
+		begin
+			"#{self.encrypted_first_name.force_encoding("binary")} #{self.encrypted_last_name.force_encoding("binary")}"
+		rescue
+			"Unknown"
+		end
+	end
 
-  def encrypted_title= input
-    self.title = input
-  end
 
-  def encrypted_first_name
-    self.first_name.decrypt Devise.secret_key
-  end
+	def self.create_encrypted_attributes (*args)
+		args.each do |method_name|
+			define_method "encrypted_#{method_name}" do
+				self.send(method_name).decrypt Devise.secret_key
+			end
+			define_method "encrypted_#{method_name}=" do |input|
+				self.send("#{method_name}=", input)
+			end
+		end
+	end
 
-  def encrypted_first_name= input
-    self.first_name = input
-  end
+	create_encrypted_attributes :last_name, :first_name, :title
 
-  def encrypted_last_name
-    self.last_name.decrypt Devise.secret_key
-  end
-
-  def encrypted_last_name= input
-    self.last_name = input
-  end
+	def self.create_virtual_attributes (*args)
+		args.each do |method_name|
+			6.times do |key|
+				key = key.to_s
+				['name', 'url'].each do |field|
+					define_method "#{method_name}_#{field}_#{key}" do
+						self.links[key][field] unless self.links.nil? or self.links[key].nil? or self.links[key][field].nil?
+					end
+					define_method "#{method_name}_#{field}_#{key}=" do |value|
+						puts "XXXX: #{value}"
+						return if value.empty?
+						self.links ||= {}
+						self.links[key] ||= {}
+						self.links[key][field] = value
+					end
+				end
+			end
+		end
+	end
+	create_virtual_attributes :links
 end

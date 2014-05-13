@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140221090828) do
+ActiveRecord::Schema.define(:version => 20140507155351) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -92,18 +92,31 @@ ActiveRecord::Schema.define(:version => 20140221090828) do
     t.string   "name"
     t.string   "key"
     t.integer  "price"
-    t.string   "description"
+    t.text     "description",         :limit => 255
     t.string   "teacher"
     t.string   "filename"
     t.string   "content_type"
     t.string   "binary_data"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.string   "avatar_file_name"
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
     t.datetime "avatar_updated_at"
+    t.date     "start_date"
+    t.string   "type"
+    t.text     "syllabus"
+    t.boolean  "hidden"
   end
+
+  create_table "courses_skills", :force => true do |t|
+    t.integer "skill_id"
+    t.integer "course_id"
+  end
+
+  add_index "courses_skills", ["course_id", "skill_id"], :name => "index_courses_skills_on_course_id_and_skill_id", :unique => true
+  add_index "courses_skills", ["course_id"], :name => "index_courses_skills_on_course_id"
+  add_index "courses_skills", ["skill_id"], :name => "index_courses_skills_on_skill_id"
 
   create_table "courses_subjects", :force => true do |t|
     t.integer "subject_id"
@@ -150,6 +163,16 @@ ActiveRecord::Schema.define(:version => 20140221090828) do
   add_index "orders", ["cart_id"], :name => "index_orders_on_cart_id"
   add_index "orders", ["user_id"], :name => "index_orders_on_user_id"
 
+  create_table "searches", :force => true do |t|
+    t.text     "term"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "skills", :force => true do |t|
+    t.string "skill"
+  end
+
   create_table "students", :force => true do |t|
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
@@ -171,7 +194,7 @@ ActiveRecord::Schema.define(:version => 20140221090828) do
     t.binary   "first_name",              :limit => 255
     t.binary   "last_name",               :limit => 255
     t.string   "username"
-    t.string   "description"
+    t.text     "description",             :limit => 255
     t.string   "hidden"
     t.string   "filename"
     t.string   "content_type"
@@ -211,6 +234,7 @@ ActiveRecord::Schema.define(:version => 20140221090828) do
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
     t.datetime "avatar_updated_at"
+    t.text     "links"
   end
 
   add_index "users", ["authy_id"], :name => "index_users_on_authy_id"
@@ -218,5 +242,16 @@ ActiveRecord::Schema.define(:version => 20140221090828) do
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["unlock_token"], :name => "index_users_on_unlock_token", :unique => true
+
+  create_table "versions", :force => true do |t|
+    t.string   "item_type",  :null => false
+    t.integer  "item_id",    :null => false
+    t.string   "event",      :null => false
+    t.string   "whodunnit"
+    t.text     "object"
+    t.datetime "created_at"
+  end
+
+  add_index "versions", ["item_type", "item_id"], :name => "index_versions_on_item_type_and_item_id"
 
 end

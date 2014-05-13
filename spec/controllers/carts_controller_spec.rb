@@ -5,7 +5,7 @@ describe CartsController do
 
   let(:valid_cart) { {} }
 
-  let(:valid_course) { {name: 'The Orange Theme'} }
+  let(:valid_course) { {name: 'The Orange Theme', price: '1'} }
 
   before(:each) do
     course = Course.create! valid_course
@@ -29,20 +29,6 @@ describe CartsController do
     end
   end
 
-  describe "GET new" do
-    it "assigns a new cart as @cart" do
-      get :new, {}
-      assigns(:cart).should be_a_new(Cart)
-    end
-  end
-
-  describe "GET edit" do
-    it "assigns the requested cart as @cart" do
-      get :edit, {:id => @cart.to_param}
-      assigns(:cart).should eq(@cart)
-    end
-  end
-
   describe "POST create" do
 		before do
 			@cart.destroy
@@ -60,6 +46,34 @@ describe CartsController do
         assigns(:cart).should be_a(Cart)
         assigns(:cart).should be_persisted
       end
+
+			it 'should add the course to the cart' do
+				@course = Course.create! valid_course
+
+				def valid_session
+					mysession = { course_id: @course.id }
+					session.to_hash.merge mysession
+				end
+					
+				post :create, {}, valid_session
+
+				session[:course_id].should be(nil)
+			end
+
+			it 'shouldn\'t add the course to the cart twice' do
+				@course = Course.create! valid_course
+
+				def valid_session
+					mysession = { course_id: @course.id }
+					session.to_hash.merge mysession
+				end
+					
+				post :create, {}, valid_session
+				session[:course_id].should be(nil)
+
+				post :create, {}, valid_session
+				session[:course_id].should be(nil)
+			end
     end
 
     describe "with invalid params" do
@@ -68,34 +82,6 @@ describe CartsController do
         Cart.any_instance.stub(:save).and_return(false)
         post :create, {:cart => {}}
         assigns(:cart).should be_a(Cart)
-      end
-    end
-  end
-
-  describe "PUT update" do
-    describe "with valid params" do
-      it "updates the requested cart" do
-        Cart.any_instance.should_receive(:update_attributes).with({"these" => "params"})
-        put :update, {:id => @cart.to_param, :cart => {"these" => "params"}}
-      end
-
-      it "assigns the requested cart as @cart" do
-        put :update, {:id => @cart.to_param, :cart => valid_cart}
-        assigns(:cart).should eq(@cart)
-      end
-
-      it "redirects to the cart" do
-        put :update, {:id => @cart.to_param, :cart => valid_cart}
-        response.should redirect_to(@cart)
-      end
-    end
-
-    describe "with invalid params" do
-      it "assigns the cart as @cart" do
-        # Trigger the behavior that occurs when invalid params are submitted
-        Cart.any_instance.stub(:save).and_return(false)
-        put :update, {:id => @cart.to_param, :cart => {}}
-        assigns(:cart).should eq(@cart)
       end
     end
   end
@@ -123,5 +109,4 @@ describe CartsController do
       flash[:notice].should eq (I18n.t 'cart.removed', {course: course.name})
     end
   end
-
 end
