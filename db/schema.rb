@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140507155351) do
+ActiveRecord::Schema.define(:version => 20140521230529) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(:version => 20140507155351) do
     t.integer  "course_id"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.text     "syllabus"
   end
 
   add_index "canvas_courses", ["name"], :name => "index_canvas_courses_on_name"
@@ -97,8 +98,8 @@ ActiveRecord::Schema.define(:version => 20140507155351) do
     t.string   "filename"
     t.string   "content_type"
     t.string   "binary_data"
-    t.datetime "created_at",                         :null => false
-    t.datetime "updated_at",                         :null => false
+    t.datetime "created_at",                                         :null => false
+    t.datetime "updated_at",                                         :null => false
     t.string   "avatar_file_name"
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
@@ -107,6 +108,8 @@ ActiveRecord::Schema.define(:version => 20140507155351) do
     t.string   "type"
     t.text     "syllabus"
     t.boolean  "hidden"
+    t.integer  "min",                                :default => 2
+    t.integer  "max",                                :default => 25
   end
 
   create_table "courses_skills", :force => true do |t|
@@ -144,11 +147,14 @@ ActiveRecord::Schema.define(:version => 20140507155351) do
     t.string   "authorization"
     t.string   "message"
     t.binary   "params"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
     t.binary   "params_key"
     t.binary   "params_iv"
     t.string   "txn_id"
+    t.binary   "params_completed"
+    t.binary   "params_completed_key"
+    t.binary   "params_completed_iv"
   end
 
   create_table "orders", :force => true do |t|

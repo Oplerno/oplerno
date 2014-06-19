@@ -19,7 +19,11 @@ ActiveAdmin.register_page "Dashboard" do
           ul do
             table_for Cart.all(limit: 10).map do
               column do |cart|
-                link_to cart.total_price, [:admin, cart]
+								begin
+									link_to cart.total_price, [:admin, cart]
+								rescue
+									'?'
+								end
               end
             end
           end
@@ -27,9 +31,18 @@ ActiveAdmin.register_page "Dashboard" do
       end
       column do
         panel "Recent Courses (#{Course.all.count})" do
-          table_for Course.all(limit: 10) do
+          table_for Course.all(limit: 10, order: 'created_at DESC') do
             column do |course|
               link_to course.name, [:admin, course]
+            end
+          end
+        end
+      end
+      column do
+        panel "Recent Searches (#{Search.all.count})" do
+          table_for Search.all(limit: 10, order: 'created_at DESC') do
+            column do |search|
+							search.term
             end
           end
         end

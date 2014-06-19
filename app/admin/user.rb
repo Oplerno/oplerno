@@ -17,7 +17,7 @@ ActiveAdmin.register User do
 
   filter :email
 
-	action_item only: :show, if: proc{ current_admin_user.id == 3 } do
+	action_item only: :show do
 		unless User.find(params[:id]).access_locked?
 			link_to 'Lock User', "/admin/users/#{params[:id]}/lock"
 		else
@@ -34,10 +34,10 @@ ActiveAdmin.register User do
 	member_action :unlock, :method => :get do
 		user = User.find(params[:id])
 		user.unlock_access!
-		redirect_to :action => :show, :notice => "Locked!"
+		redirect_to :action => :show, :notice => "Unlocked!"
 	end
 
-	action_item only: :show, if: proc{ current_admin_user.id == 3 } do
+	action_item only: :show do
 		link_to 'Become User', "/admin/users/#{params[:id]}/become", :target => "_blank"
 	end
 

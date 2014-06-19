@@ -1,7 +1,12 @@
 ActiveAdmin.register Course do
 	actions :all, :except => [:destroy]
   index do
-    column :name
+		column :avatar do |course|
+			image_tag(course.avatar.url(:thumb))
+		end
+    column :name do |course|
+			"#{course.name} (#{course.id})"
+		end
     column :price
     column "Instructor" do |course|
 			begin
@@ -33,8 +38,21 @@ ActiveAdmin.register Course do
 
   show do
     attributes_table do
+			row :avatar do |course|
+				image_tag(course.avatar.url(:thumb))
+			end
       row :name
       row :price
+      row :description
+      row :syllabus
+			row 'Canvas ID' do |course|
+				canvas_course = CanvasCourses.find_by_course_id(course.id)
+				unless canvas_course.nil?
+					link_to canvas_course.canvas_id, "https://oplerno.instructure.com/courses/#{canvas_course.canvas_id}"
+				else
+					'??'
+				end
+			end
       row "Instructor" do |course|
         begin
           teacher = User.find(course.teacher)
@@ -55,9 +73,11 @@ ActiveAdmin.register Course do
       f.input :name
       f.input :price
       f.input :description
+      f.input :syllabus
 			f.input :hidden
 			f.input :start_date
-			f.input :teacher, :collection => User.all.map { |x| [x.display_name, x.id] }
+			f.input :teacher, :collection => User.all.map { |x| [x.display_name.force_encoding('UTF-8'), x.id] }
+			f.input :avatar, :as => :file, :required => false
     end
     f.actions
   end
