@@ -5,8 +5,9 @@ class SearchesController < ApplicationController
 
 	def create
 		@search = params[:search][:term]
+		puts @search
 		Search.create! params[:search]
-		@searches = Course.search @search, per_page: 24
+		@searches = Course.search @search, per_page: 24, fields: [{name: :word_start}, {description: :word}]
 		not_found
 	end
 

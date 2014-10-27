@@ -2,7 +2,9 @@ ActiveAdmin.register Course do
 	actions :all, :except => [:destroy]
   index do
 		column :avatar do |course|
-			image_tag(course.avatar.url(:thumb))
+			link_to [course] do
+				image_tag(course.avatar.url(:thumb))
+			end
 		end
     column :name do |course|
 			"#{course.name} (#{course.id})"
@@ -42,6 +44,7 @@ ActiveAdmin.register Course do
 				image_tag(course.avatar.url(:thumb))
 			end
       row :name
+			row :slug
       row :price
       row :description
       row :syllabus
@@ -71,6 +74,7 @@ ActiveAdmin.register Course do
   form do |f|
     f.inputs "Course Details" do
       f.input :name
+      f.input :slug
       f.input :price
       f.input :description
       f.input :syllabus

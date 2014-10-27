@@ -1,6 +1,9 @@
 #
 class Course < ActiveRecord::Base
-	searchkick
+	extend FriendlyId
+	friendly_id :name, use: [:slugged, :history]
+
+	searchkick word_start: [:name]
 	paginates_per 24
 
   attr_accessible :avatar
@@ -22,10 +25,11 @@ class Course < ActiveRecord::Base
 									:start_date, :subject_list,
 									:skills, :skill, :skill_list,
 									:type, :syllabus,
-									:hidden,
+									:hidden, :slug,
 									:max, :min
 
-	has_paper_trail
+	has_paper_trail ignore: [:slug]
+	acts_as_paranoid
 
   has_many :teachers
   has_many :students
@@ -83,5 +87,9 @@ class Course < ActiveRecord::Base
 
 	def display_name
 		self.name
+	end
+
+	def should_generate_new_friendly_id?
+		new_record?
 	end
 end
