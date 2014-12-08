@@ -11,4 +11,11 @@ class Teacher < User
 
 	searchkick
 	paginates_per 24
+
+	has_one :rank, class_name: 'TeacherRanking'
+	has_one :podio_teacher
+
+	def self.all(*args)
+		find(:all, *args, conditions: [ "email like ?", "%oplerno.com"])
+	end
 end

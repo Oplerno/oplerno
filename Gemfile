@@ -10,8 +10,9 @@ end
 gem 'libnotify', :require => RUBY_PLATFORM.include?('linux') && 'rb-inotify'
 gem 'growl', :require => RUBY_PLATFORM.include?('darwin') && 'growl'
 
-gem 'rails', '3.2.18'
+gem 'rails', '~> 3.2.21'
 gem 'jquery-rails', '< 3.0.0' #, '>= 3.1.0'
+gem 'actionpack', '~> 3.2.21'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '>= 2.2.1'
@@ -28,15 +29,18 @@ group :doc do
   gem 'guard-jasmine'
   gem 'guard-coffeescript'
   gem 'guard-cucumber'
+	gem 'brakeman', '~> 2.6.3'
+	gem 'guard-brakeman', '>= 0.8.2'
   gem 'redcarpet'
 
 # metrics
 # FIXME: What's wrong here?
-  gem 'reek'
-  gem 'metric_fu'
-  gem 'churn'
-  gem 'flog'
-  gem 'simplecov-rcov-text'
+	gem 'reek', require: false
+	gem 'metric_fu', require: false
+	gem 'churn', require: false
+	gem 'flog', require: false
+	gem 'simplecov-rcov-text', require: false
+	gem 'cadre', require: false
 end
 
 gem 'activeadmin', '>= 0.6.3'
@@ -57,6 +61,7 @@ gem 'ruby-saml-idp'
 gem 'newrelic_rpm', '>= 3.7.3.204'
 gem 'coveralls', require: false
 gem 'kaminari', '>= 0.15.1'
+
 
 gem 'canvas-api', '>= 1.0'
 
@@ -95,6 +100,7 @@ gem 'minitest-rails', '>= 0.9.2'
 
 group :development, :test do
   #gem 'minitest-rails-capybara'
+	gem 'railroady'
   gem 'minitest-colorize'
   gem 'minitest-focus'
 
@@ -125,8 +131,11 @@ group :test do
 #  gem 'rack-perftools_profiler', :require => 'rack/perftools_profiler'
 end
 
-gem 'nokogiri', '~> 1.6'
+gem 'nokogiri', '= 1.6.3.1'
 gem 'redis', '~> 3.0.4'
+gem 'redis-rails'
+gem 'redis-store'
+gem 'redis-rack-cache'
 if RUBY_VERSION =~ /1.9/
 	gem 'sidekiq', '~>3.1.4'
 else
@@ -142,14 +151,19 @@ gem 'capistrano-bundler', group: :development
 gem 'capistrano-rails', group: :development
 gem 'rvm1-capistrano3', group: :development, :require => false
 
+
 gem 'unicorn', '>= 4.8.2' #, group: :production
 
 gem 'sinatra', require: false
 gem 'slim'
 
 
+gem 'podio', git: 'https://github.com/webhat/podio-rb.git'
+gem 'podiocrm', git: 'https://github.com/webhat/podiocrm.git'
+#gem 'podiocrm', path: '../podiocrm'
+
 group :test, :production do
-	gem 'paperclip_redis', '~> 0.1.0'
-	#gem 'paperclip_redis', path: 'lib/paperclip_redis'
+	gem 'paperclip_redis', '~> 0.1.1'
+	#gem 'paperclip_redis', path: '../paperclip_redis'
 end
 
