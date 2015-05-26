@@ -33,3 +33,17 @@ Feature: User
     * I entered my password confirmation: 'password'
     * I press save
     * I get an error
+
+	Scenario: Login as a new user
+		* I am not authenticated
+		* I am a User
+		* I login
+		* I get an error
+
+	Scenario: Login as a new confirmed user
+		* I am not authenticated
+		* I am a User
+		* I am confirmed
+		* I login
+		* It succeeds
+
